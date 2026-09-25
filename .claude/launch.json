@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "distribution",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "npx vite --port ${PORT:-5188} --strictPort"],
+      "port": 5188,
+      "autoPort": true
+    }
+  ]
+}

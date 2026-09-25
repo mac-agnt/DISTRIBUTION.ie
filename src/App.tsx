@@ -5,7 +5,7 @@ import AppShell from "./views/AppShell";
 /* Options the design exposed as tweaks. */
 const config = {
   /** Base colour of the abstract background behind the Dashboard's core KPIs. */
-  kpiBackdrop: "#5f8f63",
+  kpiBackdrop: "#2f4fc4",
   /** Show that background (it is always hidden in the light theme). */
   kpiBackdropOn: true,
 };

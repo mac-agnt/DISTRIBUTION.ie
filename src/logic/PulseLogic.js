@@ -65,10 +65,12 @@ import {
   hexRGB,
   buildGraph
 } from "./data";
+import { MODULES, DIST_MODULES } from "../dist/modules";
+import { AGENT_QA } from "../dist/db";
 
 /* All state and behaviour for Pulse. renderVals() returns the flat object the views render from. */
 export default class PulseLogic extends DCLogic {
-  state = { w: typeof window === "undefined" ? 1440 : window.innerWidth, theme:"harbour", page:"Home", draft:"", query:"", thread:[], typed:0, paletteOpen:false, showNotifs:false, palScope:"All", palSel:0, palRecent:["Dunne & Sons Ltd","Credit Control"],
+  state = { w: typeof window === "undefined" ? 1440 : window.innerWidth, theme:"harbour", page:"Home", dsub:{}, drec:{order:"SO-10482", cust:"murphy", po:"PO-8821", sku:"EL-4408", quote:"QT-2841", route:"D14", supplier:"atlas"}, drawer:null, drawerHist:[], acted:{}, toast:null, draft:"", query:"", thread:[], typed:0, paletteOpen:false, showNotifs:false, palScope:"All", palSel:0, palRecent:["Dunne & Sons Ltd","Credit Control"],
             done:{}, resolved:{}, approved:{}, inboxFilter:"All", approvalFilter:"Awaiting you", open:null, range:"30d",
             workDoc:null, workDocTab:"work",
             queue:"mine", recordTab:"Overview", record:"person", hovered:null, hoverLabel:"", hoverHint:"", hoverTop:0,
@@ -1148,7 +1150,7 @@ export default class PulseLogic extends DCLogic {
     this.seedActivity();
     if (this.state.page === "Dashboard") this.startKpiCount();
     this._actTimer = setInterval(() => { if (this.state.page === "Activity") this.tickActivity(); }, 700);
-    this._clockTimer = setInterval(() => { if (this.state.page === "Home") this.forceUpdate(); }, 1000);
+    this._clockTimer = setInterval(() => { if (this.state.page === "Chat") this.forceUpdate(); }, 1000);
     this._flapBoot = setInterval(() => this.forceUpdate(), 70);
     setTimeout(() => clearInterval(this._flapBoot), 1500);
     // One frame driver, fed by rAF where it runs and by a timer where it does not
@@ -1200,14 +1202,26 @@ export default class PulseLogic extends DCLogic {
   }
   componentWillUnmount(){ window.removeEventListener("paste", this._paste); window.removeEventListener("resize", this._resize); window.removeEventListener("keydown", this._key); clearInterval(this._t); clearInterval(this._clockTimer); clearInterval(this._flapBoot); cancelAnimationFrame(this._raf); clearInterval(this._fallback); clearInterval(this._actTimer); clearInterval(this._kpiTimer); }
 
+  /* Distribution answers first: each one names real records and offers a jump straight to them. */
+  qaAnswer(q){
+    const qa = AGENT_QA.find(x => x.q.test(q));
+    if (!qa) return null;
+    const label = (g) => {
+      const m = MODULES.find(x => x.id === g[0]);
+      const s = m && m.subs.find(x => x[0] === g[1]);
+      const r = g[2] ? Object.values(g[2])[0] : "";
+      return "Open " + (r || (s ? s[1] : g[0]));
+    };
+    return {text: qa.a, tool:"pulse_ontology_read", effect:"read", actions:(qa.go || []).map((g, i) => [label(g), i === 0 ? 1 : 0, g])};
+  }
   ask(q){
-    const a = pickAnswer(q);
+    const a = this.qaAnswer(q) || pickAnswer(q);
     const words = a.text.split(" ").length;
     const thread = this.state.thread.concat([
       {role:"user", text:q},
       {role:"helios", full:a.text, words, tool:a.tool, effect:a.effect, cols:a.cols, rows:a.rows, actions:a.actions, confirm:a.confirm, confirmSummary:a.confirmSummary}
     ]);
-    this.setState({thread, draft:"", query:"", paletteOpen:false, page:"Home", open:null});
+    this.setState({thread, draft:"", query:"", paletteOpen:false, page:"Chat", open:null, drawer:null});
   }
 
   hover(key, label, hint, e){
@@ -1230,6 +1244,32 @@ export default class PulseLogic extends DCLogic {
     }
   }
   componentDidUpdate(){ this.syncRailThumb(); }
+
+  /* Distribution navigation: a rail module, one of its pages, and the record in focus.
+     Pulse's own pages keep their ids, so Home's dashboard is "Dashboard" and Agents' chat is "Chat". */
+  dgo(module, sub, rec){
+    const m = MODULES.find(x => x.id === module);
+    const s = sub || (this.state.dsub[module]) || (m && m.subs[0][0]);
+    const patch = {dsub: Object.assign({}, this.state.dsub, {[module]: s}), drawer:null, drawerHist:[], miniOpen:false};
+    if (rec) patch.drec = Object.assign({}, this.state.drec, rec);
+    let page = module;
+    if (module === "Home") page = s === "exec" ? "Dashboard" : "Home";
+    else if (module === "Agents") page = s === "chat" ? "Chat" : s === "activity" ? "AgentActivity" : "Agents";
+    else if (module === "Work") patch.workSection = s;
+    else if (module === "Activity") patch.actKpi = s;
+    this.setState(patch);
+    this.go(page);
+    const el = document.querySelector("[data-scroll-main]");
+    if (el) el.scrollTop = 0;
+  }
+  dopen(kind, id){
+    this.setState(p => ({drawerHist: p.drawer ? p.drawerHist.concat([p.drawer]) : [], drawer:{kind, id}, paletteOpen:false}));
+  }
+  dact(key, done, toast){
+    clearTimeout(this._toastT);
+    this.setState(p => ({acted: Object.assign({}, p.acted, {[key]: done}), toast: {text: toast || done, t: Date.now()}}));
+    this._toastT = setTimeout(() => this.setState({toast:null}), 4200);
+  }
 
   go(page){
     const order = NAV.filter(n => !n.divider).map(n => n.page).concat(["Settings"]);
@@ -1254,7 +1294,7 @@ export default class PulseLogic extends DCLogic {
     });
   }
   askMini(q){
-    const a = pickAnswer(q);
+    const a = this.qaAnswer(q) || pickAnswer(q);
     this.setState(prev => ({
       miniThread: prev.miniThread.concat([{role:"user", text:q}, {role:"helios", text:a.text}]),
       miniDraft: ""
@@ -1397,17 +1437,17 @@ export default class PulseLogic extends DCLogic {
          dot: n.dot === true && openKeys.length > 0,
          dotStyle: "position:absolute;top:5px;" + (railOpen ? "left:30px" : "right:6px")
            + ";width:5px;height:5px;border-radius:50%;background:var(--accent)",
-         inlineStyle: inlineStyle(st.railHov === idx, n.page === page),
+         inlineStyle: inlineStyle(st.railHov === idx, (n.pages || [n.page]).includes(page)),
          hintStyle: "flex:none;font-family:" + MONO + ";font-size:9.5px;color:var(--faint);white-space:nowrap",
-         active: n.page === page,
-         railKey: n.page === page ? "active" : "idle",
-         glyphStyle: glyphStyle(n.page === page, st.hovered === idx || st.railHov === idx),
-         haloStyle: haloStyle(n.page === page, st.hovered === idx || st.railHov === idx),
-         drawStyle: drawStyle(n.page === page, st.hovered === idx || st.railHov === idx),
-         style: railStyle(n.page === page) + ";animation:railIn .42s var(--ease) " + (idx * 45) + "ms both",
+         active: (n.pages || [n.page]).includes(page),
+         railKey: (n.pages || [n.page]).includes(page) ? "active" : "idle",
+         glyphStyle: glyphStyle((n.pages || [n.page]).includes(page), st.hovered === idx || st.railHov === idx),
+         haloStyle: haloStyle((n.pages || [n.page]).includes(page), st.hovered === idx || st.railHov === idx),
+         drawStyle: drawStyle((n.pages || [n.page]).includes(page), st.hovered === idx || st.railHov === idx),
+         style: railStyle((n.pages || [n.page]).includes(page)) + ";animation:railIn .42s var(--ease) " + (idx * 22) + "ms both",
          enter: (e) => { if (!railOpen) this.hover(idx, n.label, n.hint || "", e); else this.setState({railHov:idx}); },
          leave: () => { if (this.state.railHov === idx) this.setState({railHov:null}); this.unhover(idx); },
-         go: () => this.go(n.page)});
+         go: () => this.dgo(n.page)});
 
     const workSec = WORK_SECTIONS.find(s => s.id === st.workSection) || WORK_SECTIONS[0];
     const workView = st.workViews[workSec.id] || workSec.views[0];
@@ -3071,7 +3111,14 @@ export default class PulseLogic extends DCLogic {
     const DIRS_ORDER = ["People","Organisations","Teams","Locations","Site visits"];
     const ADMIN_ORDER = ["Automations","System health","Installed modules"];
     let contextNav, contextHint, searchHint;
-    if (page === "Settings"){
+    const railMod = MODULES.find(m => m.id === page || (m.id === "Home" && (page === "Dashboard")) || (m.id === "Agents" && (page === "AgentActivity" || page === "Chat")));
+    const curSub = page === "Dashboard" ? "exec" : page === "Home" ? "command" : page === "Chat" ? "chat" : page === "AgentActivity" ? "activity" : page === "Agents" ? "agents"
+      : (st.dsub[page] || (railMod && railMod.subs[0][0]));
+    if (railMod && (DIST_MODULES.includes(railMod.id) || railMod.id === "Home" || railMod.id === "Agents")){
+      contextNav = railMod.subs.map(([k, l]) => seg(l, curSub === k, () => this.dgo(railMod.id, k)));
+      contextHint = railMod.label.toUpperCase();
+      searchHint = "Search orders, customers, SKUs, POs";
+    } else if (page === "Settings"){
       contextNav = ADMIN_GROUPS.map(grp => seg(
         grp[0].charAt(0) + grp[0].slice(1).toLowerCase(),
         st.adminGroup === grp[0],
@@ -3147,7 +3194,19 @@ export default class PulseLogic extends DCLogic {
     // Below these widths the nav keeps its room and the softer furniture gives way:
     // the context hint first, then the search label, then the profile text.
     const roomy = st.w >= 1320, mid = st.w >= 1120;
+    const isDist = DIST_MODULES.includes(page) || page === "Home" || page === "AgentActivity";
+    const dx = {
+      page: page === "AgentActivity" ? "AgentActivity" : page, sub: page === "AgentActivity" ? "activity" : curSub, rec: st.drec, acted: st.acted,
+      drawer: st.drawer, canBack: st.drawerHist.length > 0, toast: st.toast,
+      go: (m, sub, rec) => this.dgo(m, sub, rec),
+      open: (kind, id) => this.dopen(kind, id),
+      close: () => this.setState({drawer:null, drawerHist:[]}),
+      back: () => this.setState(p => ({drawer: p.drawerHist[p.drawerHist.length - 1] || null, drawerHist: p.drawerHist.slice(0, -1)})),
+      act: (key, done, toast) => this.dact(key, done, toast),
+      ask: (q) => { this.setState({dsub: Object.assign({}, st.dsub, {Agents:"chat"})}); this.ask(q); }
+    };
     return {
+      isDist, dx,
       nav, contextNav, contextHint, searchHint, queueTasks,
       isRecords: page === "Records",
       isActivity: page === "Activity",
@@ -3178,7 +3237,7 @@ export default class PulseLogic extends DCLogic {
 
       /* header zones */
       isAgents: page === "Agents",
-      showPillNav: page !== "Agents",
+      showPillNav: true,
 
       /* home widgets */
       widgetHint: st.widgetEdit ? "EDITING BOARD" : String(st.widgets.length) + " WIDGETS",
@@ -3656,7 +3715,7 @@ export default class PulseLogic extends DCLogic {
       sendAgent: () => { if (st.agentDraft.trim()) this.sendToAgent(st.agentDraft.trim()); },
 
       /* mini chat */
-      showFab: page !== "Home" && page !== "Agents",
+      showFab: page !== "Chat" && page !== "Agents",
       fabTitle: st.miniOpen ? "Close Helios" : "Ask Helios",
       fabChatStyle: "position:absolute;inset:0;transition:transform .34s var(--ease),opacity .24s var(--ease);"
         + (st.miniOpen ? "transform:rotate(-90deg) scale(.7);opacity:0" : "transform:none;opacity:1"),
@@ -3670,7 +3729,7 @@ export default class PulseLogic extends DCLogic {
       miniOpen: st.miniOpen,
       toggleMini: () => this.setState(prev => ({miniOpen: !prev.miniOpen})),
       miniContext: "SEES " + page.toUpperCase(),
-      goHomeChat: () => this.setState({page:"Home", miniOpen:false}),
+      goHomeChat: () => this.setState({page:"Chat", miniOpen:false}),
       miniIsChat: (st.miniTab || "chat") === "chat", miniIsWork: (st.miniTab || "chat") === "work",
       miniTabTrack: "position:relative;display:flex;align-items:center;width:164px;padding:2px;background:var(--surface-faint);border:1px solid var(--border);border-radius:var(--r-md,14px);flex:none;box-shadow:inset 0 1px 3px rgba(0,0,0,.34),inset 0 -1px 0 var(--glass-highlight);",
       miniTabThumb: (() => {
@@ -3687,7 +3746,7 @@ export default class PulseLogic extends DCLogic {
       }),
       miniHasRecent: st.thread.length > 0,
       miniRecent: st.thread.length > 0 ? [{title: (st.thread.find(m => m.role === "user") || {}).text || "Recent conversation",
-        date: new Date().toLocaleDateString("en-GB"), open: () => this.setState({page:"Home", miniOpen:false})}] : [],
+        date: new Date().toLocaleDateString("en-GB"), open: () => this.setState({page:"Chat", miniOpen:false})}] : [],
       miniEmpty: st.miniThread.length === 0,
       miniGreeting: (() => { const h = new Date().getHours();
         const g = h < 5 ? "Still up" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : h < 22 ? "Good evening" : "Still going";
@@ -4180,7 +4239,7 @@ export default class PulseLogic extends DCLogic {
         label: st.hoverLabel, hint: st.hoverHint,
         style: labelStyle(st.hovered !== null, st.hoverTop)
       },
-      isChat: page === "Home",
+      isChat: page === "Chat",
       isWork: page === "Work",
       isSettings: page === "Settings",
       admin: adminModel,
@@ -4210,7 +4269,7 @@ export default class PulseLogic extends DCLogic {
           confirmSummary: m.confirmSummary || "",
           confirmHash: "sha256 a4f19c…",
           hasActions: done && m.confirm !== true && !!m.actions,
-          actions:(m.actions || []).map(a => ({label:a[0], bg:a[1] ? LIME : "none", color:a[1] ? "var(--on-accent)" : "var(--ink)", border:a[1] ? LIME : "var(--border)", run:() => this.ask(a[0])}))
+          actions:(m.actions || []).map(a => ({label:a[0], bg:a[1] ? LIME : "none", color:a[1] ? "var(--on-accent)" : "var(--ink)", border:a[1] ? LIME : "var(--border)", run:() => a[2] ? this.dgo(a[2][0], a[2][1], a[2][2]) : this.ask(a[0])}))
         };
       }),
       suggestions: [
