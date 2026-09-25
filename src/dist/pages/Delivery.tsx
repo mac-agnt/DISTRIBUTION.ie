@@ -432,7 +432,8 @@ const EXTRA_VEHICLES: Vehicle[] = [
   { reg: "242-D-40318", type: "3.5t van", route: "Spare", driver: "—", status: "Spare · Dublin yard · kept for urgent runs", util: 0, service: "17 Oct", km: 18940 },
   { reg: "231-KE-2296", type: "3.5t van", route: "Naas shuttle", driver: "—", status: "Naas yard · 11:00 shuttle to Dublin", util: 38, service: "6 Nov", km: 97310 },
 ];
-const FLEET = [...VEHICLES, ...EXTRA_VEHICLES];
+/* The driver comes from the route, so the fleet list always agrees with the route cards and the route drawer. */
+const FLEET: Vehicle[] = [...VEHICLES, ...EXTRA_VEHICLES].map(v => ({ ...v, driver: ROUTES.find(r => r.id === v.route)?.driver ?? v.driver }));
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const daysTo = (s: string) => {
   const m = /(\d{1,2}) ([A-Z][a-z]{2})/.exec(s);

@@ -183,7 +183,7 @@ function Overview() {
 
       <Grid cols="minmax(0,7fr) minmax(0,5fr)" gap={14}>
         <Card title="Needs action now" sub="Four lines where customer orders are waiting, or stock runs out before a new order could land" pad={false}
-          right={<Btn small kind="quiet" onClick={() => openStock("crit")}>All 92 critical</Btn>}>
+          right={<Btn small kind="quiet" onClick={() => openStock("crit")}>All {SH.Critical + SH.Stockout} critical and out</Btn>}>
           <div className="dx-list">
             {URGENT.map((u, i) => {
               const p = product(u.sku);
@@ -249,7 +249,7 @@ function Overview() {
         <Strip h={14} fmt={num} parts={STOCK_HEALTH.map(([l, v]) => ({ label: l, value: v, tone: healthTone[l] }))} />
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginTop: 14 }}>
           <span style={{ fontSize: 13, color: "var(--body)", marginRight: 6 }}>
-            {num(SH.Critical + SH.Stockout)} SKUs can't cover demand. {num(SH.Excess + SH.Dead)} hold stock nobody is buying.
+            {num(SH.Critical + SH.Stockout)} SKUs can't cover demand. Another {num(SH.Excess + SH.Dead)} are excess or dead: cash on a shelf.
           </span>
           <Btn small onClick={() => openStock("crit")}>Critical & stockout</Btn>
           <Btn small onClick={() => openStock("excess")}>Excess</Btn>
@@ -398,7 +398,8 @@ function Availability() {
     left -= u; lastI = i;
     return u;
   });
-  const firstI = used.findIndex(u => u > 0);
+  const prevI = lastI > 0 ? used.slice(0, lastI).map((u, i) => (u > 0 ? i : -1)).filter(i => i >= 0).pop() ?? -1 : -1;
+  const before = used.slice(0, lastI < 0 ? 0 : lastI).reduce((a, b) => a + b, 0);
   const full = left <= 0;
   const last = lastI >= 0 ? tiers[lastI] : null;
   const needsPO = last?.needs && !dx.acted[last.needs];
@@ -422,7 +423,7 @@ function Availability() {
   const tierCols: Col<Tier & { used: number; i: number }>[] = [
     { k: "src", label: "Source", w: "1.45fr", render: t => <TwoLine top={t.ref ? <RefLink r={t.ref} /> : t.src} bottom={t.ref ? t.src : t.from} /> },
     { k: "qty", label: "Free", w: "0.6fr", align: "right", mono: true, render: t => <span style={{ color: t.qty ? undefined : "var(--faint)" }}>{num(t.qty)}</span> },
-    { k: "date", label: "Earliest", w: "0.72fr", render: t => t.date },
+    { k: "date", label: "Earliest", w: "0.72fr", render: t => (t.qty ? t.date : <span className="dx-faint">—</span>) },
     { k: "used", label: "Used", w: "0.6fr", align: "right", mono: true, render: t => (t.used ? <b style={{ color: "var(--accent)" }}>{num(t.used)}</b> : <span className="dx-faint">—</span>) },
     { k: "note", label: "Why", w: "2.6fr", render: t => <Wrap dim><Linked text={t.note} /></Wrap> },
   ];
@@ -438,7 +439,7 @@ function Availability() {
         <Kpi label="Next big receipt" value="PO-8821" sub={"26 Sep 10:30 · " + num(inbound) + " units on the constrained lines"} onClick={() => dx.open("po", "PO-8821")} />
       </KpiRow>
 
-      <Card title="Available to promise" sub="Constrained lines, Dublin and Naas. Free after receipt is what's left once waiting orders take their share." pad={false}>
+      <Card title="Available to promise" sub="Constrained lines, Dublin and Naas. Held back is safety stock Pulse won't promise. After receipt is what's free once waiting orders take their share." pad={false}>
         <Table cols={atpCols} rows={ATP_ROWS} onRow={r => dx.open("sku", r.sku)} rowTone={r => (r.waitQty ? "bad" : undefined)} />
       </Card>
 
@@ -459,9 +460,9 @@ function Availability() {
                 ? <>From {last.from}{last.ref ? <>, using {last.ref.kind === "supplier" ? "a new order from " : ""}<RefLink r={last.ref} /></> : null}.</>
                 : <>{num(q - left)} can be promised by {last ? last.date : "—"}. The other {num(left)} need a new purchase order.</>}
             </div>
-            {full && firstI >= 0 && firstI !== lastI && (
+            {full && prevI >= 0 && (
               <div style={{ fontSize: 12.5, color: "var(--dim)", marginTop: 8, lineHeight: 1.5 }}>
-                Or split it: {num(used[firstI])} on {tiers[firstI].date} from {tiers[firstI].from}, the balance on {last!.date}.
+                Or split it: {num(before)} by {tiers[prevI].date}, the other {num(used[lastI])} on {last!.date}.
               </div>
             )}
             {needsPO && (
@@ -493,7 +494,7 @@ function Availability() {
               ["Naas free", String(t2.nasAvail), "ok"], ["Naas need, 7 days", String(t2.nasDemand7)],
             ]} />
             <div style={{ fontSize: 13, lineHeight: 1.55, color: "var(--body)", marginTop: 12 }}>
-              Three Dublin orders are short while the drums sit in Kildare: {t2.orders.map((o, i) => <span key={o}>{i ? ", " : ""}<RecLink kind="order" id={o} /> ({customer(order(o).cust).name.split(" ")[0]})</span>)}.
+              Three Dublin orders are short while the drums sit in Naas: {t2.orders.map((o, i) => <span key={o}>{i ? ", " : ""}<RecLink kind="order" id={o} /> ({customer(order(o).cust).name.split(" ")[0]})</span>)}.
               {" "}{t2.freeNote} {t2.murphyNote}
             </div>
             <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
@@ -702,7 +703,7 @@ function SlowDead() {
   ];
   return (
     <Page eyebrow="Inventory · Slow & dead stock" title={<><span style={{ color: "var(--warn)" }}>{eur(KPI.slowStock)}</span> tied up in slow-moving stock</>}
-      sub={pct((KPI.slowStock / KPI.inventory) * 100) + " of the €2.46m on the shelves. " + eur(KPI.deadStock) + " has not moved in 180 days. Seven actions release " + eur(release) + " without writing anything off."}
+      sub={pct((KPI.slowStock / KPI.inventory) * 100) + " of the €2.46m on the shelves. " + eur(KPI.deadStock) + " has not moved in 180 days. Seven actions release " + eur(release) + " of it, most without a discount."}
       right={<Btn onClick={() => dx.go("Finance", "wc")}>Working capital</Btn>}>
       <KpiRow n={4}>
         {SLOW_BANDS.map((b, i) => (
@@ -731,7 +732,7 @@ function SlowDead() {
               ["Release vs facility drawn", pct((release / CASH.facilityUsed) * 100, 0) + " of " + eurK(CASH.facilityUsed)],
             ]} />
             <div style={{ fontSize: 13, lineHeight: 1.55, color: "var(--body)", marginTop: 12 }}>
-              Carrying cost covers storage, insurance, capital and write-down risk: about {eur(Math.round(carrying / 12))} a month for stock nobody is buying.
+              Carrying cost covers storage, insurance, capital and write-down risk: about {eur(Math.round(carrying / 12))} a month for stock that is barely selling.
               {" "}The {eur(release)} release is {pct((release / KPI.wcRelease) * 100, 0)} of the {eur(KPI.wcRelease)} working-capital plan.
             </div>
           </Card>
@@ -793,7 +794,7 @@ function Forecast() {
         <Kpi label={"Stocking out within " + h + " days"} value={within.length + " of " + F_ROWS.length} sub={"Window ends " + HORIZON_END[h]} tone={within.length ? "bad" : "ok"} />
         <Kpi label="First projected stockout" value={first.stockout} sub={first.sku + " · " + product(first.sku).name} subTone="bad" onClick={() => dx.open("sku", first.sku)} />
         <Kpi label={"EL-4408 at " + h + " days"} value={el[key] < 0 ? "−" + num(-el[key]) : num(el[key])} sub="Dublin, without a new PO" tone={el[key] < 0 ? "bad" : undefined} onClick={() => dx.open("sku", "EL-4408")} />
-        <Kpi label={"Short at " + h + " days"} value={num(-shortUnits) + " units"} sub="Across the watched lines, if nothing is ordered" subTone={shortUnits < 0 ? "bad" : "ok"} />
+        <Kpi label={"Short at " + h + " days"} value={num(Math.abs(shortUnits)) + " units"} sub="Across the watched lines, if nothing is ordered" subTone={shortUnits < 0 ? "bad" : "ok"} />
       </KpiRow>
 
       <Card title={<><RecLink kind="sku" id="EL-4408" /> <span style={{ marginLeft: 6 }}>Industrial Cable 100m · Dublin</span></>}
@@ -934,7 +935,7 @@ function Transfers() {
             { k: "Approve by 10:30", v: ok ? "Approved" : "Liam Murphy", sub: ok ? "Naas pick released" : "Waiting", tone: ok ? "ok" : "warn", icon: ok ? IC.check : IC.clock },
             { k: "Naas pick", v: "40 drums", sub: "Aoife Brennan's team, by 10:45", tone: ok ? "accent" : undefined },
             { k: "Shuttle", v: "Naas 11:00 → Dublin 11:45", sub: "Booked in by Kevin Brady, allocated to 3 orders", icon: IC.truck },
-            { k: "Out on D14", v: "13:45", sub: "SO-10497 today. SO-10509 and SO-10526 on tomorrow's first routes", onClick: () => dx.open("route", "D14") },
+            { k: "Out on D14", v: "13:45", sub: <Linked text="SO-10497 today. SO-10509 and SO-10526 on tomorrow's first routes." />, onClick: () => dx.open("route", "D14") },
           ]} />
         </Grid>
       </Card>

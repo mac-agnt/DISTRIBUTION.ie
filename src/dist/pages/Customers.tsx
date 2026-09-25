@@ -973,7 +973,7 @@ function Detail() {
                     <div><span className="dx-num" style={{ fontWeight: 500 }}>{inv.id}</span> <span className="dx-faint">· issued {inv.issued} · due {inv.due}</span></div>
                     {inv.promise && <div className="dx-muted" style={{ fontSize: 12 }}>{inv.promise}</div>}
                   </div>
-                  <Badge tone={late ? "bad" : "ok"}>{inv.status}</Badge>
+                  <Badge tone={late ? "bad" : /Due today/.test(inv.status) ? "warn" : "ok"}>{inv.status}</Badge>
                   <span className="dx-num" style={{ fontWeight: 600, fontSize: 13, width: 70, textAlign: "right" }}>{eur(inv.amount)}</span>
                 </div>
               );

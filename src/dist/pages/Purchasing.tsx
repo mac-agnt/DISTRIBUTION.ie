@@ -1,4 +1,4 @@
-import { useEffect, useState, type ComponentType } from "react";
+import { useEffect, useState, type ComponentType, type ReactNode } from "react";
 import {
   COST_CHANGES, GOODS_IN_TODAY, KPI, ORDERS, OTIF, POS, SKU_DEMAND, SUPPLIERS, TODAY, COMPANY, WAREHOUSES, SUPPLIER_COMPARE_EL4408,
   customer, eur, eurK, num, pct, po, product, supplier, who, type PO, type Supplier,
@@ -118,7 +118,7 @@ function Overview() {
       </KpiRow>
 
       <Grid cols="minmax(0,7fr) minmax(0,5fr)" gap={14}>
-        <Card title="Approval queue" sub={QUEUE.filter(q => !dx.acted[q.id]).length + " waiting · the expedite decision closes at 09:30"} pad={false}
+        <Card title="Approval queue" sub={QUEUE.filter(q => !dx.acted[q.draft ? q.draft.act + "-send" : q.id]).length + " waiting · the expedite decision closes at 09:30"} pad={false}
           right={<Btn small kind="quiet" onClick={() => dx.go("Work", "approvals")}>All approvals</Btn>}>
           <div className="dx-list">
             {QUEUE.map((q, i) => (
@@ -516,7 +516,7 @@ function Incoming() {
             The 11:00 EuroFix delivery is the biggest: 48 pallets. Two pickers move to goods-in for it, which is why wave 3 is running 40 minutes behind.
           </div>
         </Card>
-        <Card title="Missing ASN" sub="Bristol Abrasives · PO-8839 · 28 pallets at 14:30">
+        <Card title="Missing ASN" sub={<>Bristol Abrasives · <RecLink kind="po" id="PO-8839" /> · 28 pallets at 14:30</>}>
           <div style={{ fontSize: 13, lineHeight: 1.55, color: "var(--body)" }}>
             Without an advance shipping notice, goods-in can't pre-check the 6 lines, and the pallets sit on Dock 5 until someone counts them by hand.
           </div>
@@ -532,9 +532,9 @@ function Incoming() {
         right={<ActBtn id="d-expedite" small kind="primary" label="Expedite · €420" done="Expedited · lands 06:30" toast="PO-8821 expedited: Atlas dedicated van, €420, lands 06:30 tomorrow. Six account managers notified." />}>
         <Chain dir="across" steps={[
           { k: "Goods received", v: expedited ? "06:30 · Dock 1" : "10:30 · Dock 1", sub: "Kevin Brady's team, " + x.pallets + " pallets", icon: IC.truck, tone: expedited ? "ok" : "warn" },
-          { k: "Inventory updated", v: "5 constrained lines", sub: "EL-4408 +120 · EL-4521 +300 · IC-2290 +600", onClick: () => dx.open("sku", "EL-4408") },
-          { k: "Backorders released", v: "6 orders · 8 lines", sub: "Murphy's SO-10482 first", onClick: () => dx.go("Orders", "backorders") },
-          { k: "Pick tasks created", v: "First wave", sub: expedited ? "Before the 08:00 wave" : "Into the 11:00 wave", onClick: () => dx.go("Warehouse", "board") },
+          { k: "Inventory updated", v: "5 constrained lines", sub: <Linked text="EL-4408 +120 · EL-4521 +300 · IC-2290 +600" />, onClick: () => dx.open("sku", "EL-4408") },
+          { k: "Backorders released", v: "6 orders · 8 lines", sub: <Linked text="Murphy's SO-10482 first" />, onClick: () => dx.go("Orders", "backorders") },
+          { k: "Pick tasks created", v: "First wave", sub: expedited ? "Into the 08:00 wave" : "Into the 11:00 wave", onClick: () => dx.go("Warehouse", "board") },
           { k: "Customers updated", v: dx.acted["po8821-drafts"] ? "6 updates drafted" : "6 updates to draft", sub: "One per order, in Outlook", tone: dx.acted["po8821-drafts"] ? "ok" : undefined },
         ]} />
       </Card>
