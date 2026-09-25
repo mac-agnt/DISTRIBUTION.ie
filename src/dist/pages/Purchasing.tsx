@@ -649,7 +649,7 @@ function Performance() {
     { k: "sc", label: "Service score", w: "1.1fr", render: r => <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><Meter value={score(r)} w={42} tone={tone(score(r))} /><b className="dx-num" style={{ fontWeight: 600 }}>{score(r).toFixed(1)}</b></span> },
     { k: "sp", label: "Spend", w: "0.9fr", align: "right", render: r => two(eurK(r.spend), "#" + SPEND_RANK[r.id] + " by spend") },
     { k: "ot", label: "OTIF · fill", w: "0.8fr", align: "right", render: r => two(pct(r.otif), "fill " + pct(r.fill), r.otif < 90 ? "var(--bad)" : r.otif < 95 ? "var(--warn)" : undefined) },
-    { k: "d", label: "Avg delay", w: "0.9fr", align: "right", render: r => two(r.delay + " days", "lead acc. " + r.leadAcc + "%", r.delay > 2 ? "var(--bad)" : undefined) },
+    { k: "d", label: "Avg delay", w: "0.9fr", align: "right", render: r => two(r.delay.toFixed(1) + " days", "lead acc. " + r.leadAcc + "%", r.delay > 2 ? "var(--bad)" : undefined) },
     { k: "q", label: "Quality", w: "0.85fr", align: "right", mono: true, render: r => r.quality + " · " + r.returns + " · " + r.claims },
     { k: "pc", label: "Price chg", w: "0.72fr", align: "right", mono: true, render: r => r.priceChanges },
     { k: "a", label: "Orders hit", w: "0.75fr", align: "right", mono: true, render: r => <span style={{ color: r.affected > 50 ? "var(--bad)" : undefined }}>{r.affected}</span> },
@@ -677,7 +677,7 @@ function Performance() {
           <div style={{ marginTop: 14 }}>
             <Facts cols={3} items={[
               ["Total spend", eur(s.spend)], ["OTIF", pct(s.otif), s.otif < 90 ? "bad" : undefined], ["Fill rate", pct(s.fill)],
-              ["Average delay", s.delay + " days", s.delay > 2 ? "bad" : undefined], ["Lead-time accuracy", s.leadAcc + "%"], ["Quality issues", String(s.quality), s.quality > 4 ? "warn" : undefined],
+              ["Average delay", s.delay.toFixed(1) + " days", s.delay > 2 ? "bad" : undefined], ["Lead-time accuracy", s.leadAcc + "%"], ["Quality issues", String(s.quality), s.quality > 4 ? "warn" : undefined],
               ["Returns", String(s.returns)], ["Price changes", String(s.priceChanges)], ["Open claims", String(s.claims)],
             ]} />
           </div>

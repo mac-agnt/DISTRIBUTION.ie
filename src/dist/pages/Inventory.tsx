@@ -80,7 +80,7 @@ export function ProcurementDecision() {
     { k: "rec", label: "Recommended", w: "1.1fr", render: r => (r.rec ? <Badge tone="accent">Recommended</Badge> : <span className="dx-faint">Cheapest landed</span>) },
   ];
   return (
-    <Card title="Procurement decision · EL-4408 Industrial Cable 100m" sub="Two approved suppliers for the same drum. Pulse compares what each one costs to land and whether it lands in time."
+    <Card title={<>Procurement decision · <RecLink kind="sku" id="EL-4408" /> Industrial Cable 100m</>} sub="Two approved suppliers for the same drum. Pulse compares what each one costs to land and whether it lands in time."
       right={<Btn small kind="quiet" onClick={() => dx.go("Purchasing", "performance", { supplier: "atlas" })}>Supplier performance</Btn>} pad={false}>
       <Table cols={cols} rows={SUPPLIER_COMPARE_EL4408} rowTone={r => (r.rec ? "accent" : undefined)} />
       <div style={{ padding: "16px 20px 18px", borderTop: "1px solid var(--border)" }}>
@@ -488,7 +488,7 @@ function Availability() {
       <div className="dx-section">
         <div className="dx-section-head"><div className="dx-section-title">Why promises break here</div><span className="dx-faint" style={{ fontSize: 12.5 }}>Three cases from this week</span></div>
         <Grid cols="repeat(3,minmax(0,1fr))" gap={12}>
-          <Card tone="bad" title="Stock in Naas, orders waiting in Dublin" sub={"EL-4408 · " + product("EL-4408").name}>
+          <Card tone="bad" title="Stock in Naas, orders waiting in Dublin" sub={<><RecLink kind="sku" id="EL-4408" /> · {product("EL-4408").name}</>}>
             <Facts cols={2} items={[
               ["Dublin free", String(t2.dubAvail), "bad"], ["Dublin need, 7 days", String(t2.dubDemand7)],
               ["Naas free", String(t2.nasAvail), "ok"], ["Naas need, 7 days", String(t2.nasDemand7)],
@@ -516,12 +516,12 @@ function Availability() {
               <Btn small kind="quiet" onClick={() => dx.go("Customers", "detail", { cust: "liffey" })}>Liffey account</Btn>
             </div>
           </Card>
-          <Card title="Safety stock held back while orders wait" sub="EL-4408 · Dublin trade counter">
+          <Card title="Safety stock held back while orders wait" sub={<><RecLink kind="sku" id="EL-4408" /> · Dublin trade counter</>}>
             <div style={{ fontSize: 13, lineHeight: 1.55, color: "var(--body)" }}>
               The 12 free drums in Dublin are below the 40 safety stock, so Pulse won't promise them. Releasing them would complete Horizon's <RecLink kind="order" id="SO-10497" /> now, but leaves the trade counter with no cable until the shuttle lands at 11:45.
             </div>
             <div style={{ fontSize: 13, lineHeight: 1.55, color: "var(--accent)", marginTop: 8 }}>
-              TR-2291 covers SO-10497 in time for D14 at 13:45, so keep the hold.
+              <Linked text="TR-2291 covers SO-10497 in time for D14 at 13:45, so keep the hold." />
             </div>
             <div style={{ fontSize: 12.5, color: "var(--dim)", marginTop: 8, lineHeight: 1.5 }}>
               Also held in Dublin: <Linked text="SAF-3310 150 (below 200), IC-4470 90 (below 150), FIX-1180 50." />
@@ -593,7 +593,7 @@ function Replenishment() {
   const covered = REPLEN.filter(r => r.suggest === 0);
   return (
     <Page eyebrow="Inventory · Replenishment" title={<>{KPI.reorderRecs} recommendations · {eurK(KPI.recommendedBuy)}</>}
-      sub="What to buy, how much, from whom and by when. The Inventory Agent re-ran at 09:14 after Atlas moved PO-8821. Confidence is the model's estimate, not a promise."
+      sub={<Linked text="What to buy, how much, from whom and by when. The Inventory Agent re-ran at 09:14 after Atlas moved PO-8821. Confidence is the model's estimate, not a promise." />}
       right={<Btn icon={IC.chat} onClick={() => dx.ask("What should we reorder this week?")}>Ask Inventory Agent</Btn>}>
       <KpiRow n={4}>
         {REPLEN_MIX.map(m => (
@@ -798,7 +798,7 @@ function Forecast() {
       </KpiRow>
 
       <Card title={<><RecLink kind="sku" id="EL-4408" /> <span style={{ marginLeft: 6 }}>Industrial Cable 100m · Dublin</span></>}
-        sub="Projected available, week by week for 13 weeks. PO-8821's 120 are counted on 26 Sep. Without a new PO Dublin goes negative in the week of 23 Oct."
+        sub={<Linked text="Projected available, week by week for 13 weeks. PO-8821's 120 are counted on 26 Sep. Without a new PO Dublin goes negative in the week of 23 Oct." />}
         right={<Btn small onClick={() => dx.go("Inventory", "replenishment", { sku: "EL-4408" })}>Replenishment</Btn>}>
         <div style={{ paddingTop: 22 }}>
           <Lines h={240} zero labels={F.weeks} fmt={v => num(Math.round(v))} series={[
