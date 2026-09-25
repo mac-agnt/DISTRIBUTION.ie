@@ -572,7 +572,7 @@ export type Replen = {
   confidence: number; reason: string; supplier: string; value: number;
 };
 export const REPLEN: Replen[] = [
-  { sku: "EL-4408", current: 38, avail: 12, forecast4w: 141, lead: 28, existingPO: "PO-8821 · 120 due tomorrow", suggest: 160, when: "TODAY", stockout: "28 Sep",
+  { sku: "EL-4408", current: 38, avail: 12, forecast4w: 141, lead: 28, existingPO: "PO-8821 · 120 due tomorrow", suggest: 160, when: "TODAY", stockout: "21 Oct",
     confidence: 91, reason: "Existing incoming PO does not provide sufficient cover against expected demand.", supplier: "atlas", value: 3424 },
   { sku: "EL-4521", current: 22, avail: 0, forecast4w: 196, lead: 28, existingPO: "PO-8821 · 300 due tomorrow", suggest: 200, when: "TODAY", stockout: "Now",
     confidence: 88, reason: "Demand up 34% on last quarter. PO-8821 covers 6 weeks, lead time is 4.", supplier: "atlas", value: 3420 },
@@ -696,15 +696,15 @@ export const ROUTES: Route[] = [
     done: 7, otif: 97.2, area: "Dublin 2 · 4 · Ballsbridge", km: 36 },
   { id: "D18", driver: "shane", vehicle: "212-D-7741", type: "3.5t van", stops: 6, value: 9420, depart: "06:40", complete: "09:10", wh: "DUB", status: "Delivered",
     done: 6, otif: 100, area: "Tallaght · Firhouse", km: 28 },
-  { id: "W01", driver: "declan", vehicle: "242-D-9318", type: "7.5t rigid", stops: 5, value: 17260, depart: "12:00", complete: "16:30", wh: "DUB", status: "Awaiting dispatch",
+  { id: "W01", driver: "eoin", vehicle: "242-D-9318", type: "7.5t rigid", stops: 5, value: 17260, depart: "12:00", complete: "16:30", wh: "DUB", status: "Awaiting dispatch",
     done: 0, otif: 95.8, risk: "Waiting on SO-10536", area: "Dún Laoghaire · Bray · Wicklow", km: 71 },
-  { id: "N02", driver: "shane", vehicle: "242-KE-1187", type: "12t rigid", stops: 5, value: 14880, depart: "06:30", complete: "08:55", wh: "NAS", status: "Delivered",
+  { id: "N02", driver: "paddy", vehicle: "242-KE-1187", type: "12t rigid", stops: 5, value: 14880, depart: "06:30", complete: "08:55", wh: "NAS", status: "Delivered",
     done: 5, otif: 96.0, area: "Naas · Sallins · Clane", km: 42 },
   { id: "N04", driver: "paddy", vehicle: "241-KE-3302", type: "7.5t rigid", stops: 4, value: 23540, depart: "11:00", complete: "14:45", wh: "NAS", status: "Loading",
     done: 0, otif: 96.7, area: "Kildare · Newbridge · Park West", km: 67 },
-  { id: "K01", driver: "conor", vehicle: "231-KE-8841", type: "12t rigid", stops: 5, value: 26910, depart: "07:15", complete: "13:00", wh: "NAS", status: "In transit",
+  { id: "K01", driver: "declan", vehicle: "231-KE-8841", type: "12t rigid", stops: 5, value: 26910, depart: "07:15", complete: "13:00", wh: "NAS", status: "In transit",
     done: 4, otif: 93.1, risk: "SO-10474 count mismatch", area: "Carlow · Athy · Kill", km: 118 },
-  { id: "M01", driver: "niall", vehicle: "222-KE-5520", type: "12t rigid", stops: 4, value: 19880, depart: "06:20", complete: "14:10", wh: "NAS", status: "In transit",
+  { id: "M01", driver: "james", vehicle: "222-KE-5520", type: "12t rigid", stops: 4, value: 19880, depart: "06:20", complete: "14:10", wh: "NAS", status: "In transit",
     done: 2, otif: 91.9, area: "Portlaoise · Tullamore · Athlone", km: 212 },
 ];
 export const route = (id: string) => ROUTES.find(r => r.id === id) as Route;
@@ -851,12 +851,12 @@ export const DEBTOR_AGEING: [string, number][] = [["Current", 194000], ["30 days
 export type Invoice = { id: string; cust: string; amount: number; issued: string; due: string; days: number; status: string; promise?: string };
 export const INVOICES: Invoice[] = [
   { id: "INV-28482", cust: "doyle", amount: 14860, issued: "20 Jul", due: "20 Aug", days: 67, status: "Overdue 36 days", promise: "Promised 'this week' on 18 Sep" },
-  { id: "INV-28561", cust: "doyle", amount: 16220, issued: "12 Aug", due: "11 Sep", days: 44, status: "Overdue 14 days" },
+  { id: "INV-28561", cust: "doyle", amount: 16220, issued: "26 Aug", due: "25 Sep", days: 30, status: "Due today" },
   { id: "INV-28655", cust: "doyle", amount: 11600, issued: "5 Sep", due: "5 Oct", days: 20, status: "Current" },
   { id: "INV-28410", cust: "mcgrath", amount: 8940, issued: "26 Jun", due: "26 Jul", days: 91, status: "90+ days", promise: "Disputed delivery 22 Sep" },
   { id: "INV-28502", cust: "tallaght", amount: 6420, issued: "25 Jul", due: "24 Aug", days: 62, status: "Overdue 32 days" },
   { id: "INV-28519", cust: "midland", amount: 4380, issued: "30 Jul", due: "29 Aug", days: 57, status: "Overdue 27 days", promise: "Cheque posted 23 Sep" },
-  { id: "INV-28577", cust: "swords", amount: 3120, issued: "14 Aug", due: "30 Sep EOM", days: 42, status: "Overdue 12 days" },
+  { id: "INV-28577", cust: "swords", amount: 3120, issued: "14 Aug", due: "13 Sep", days: 42, status: "Overdue 12 days" },
   { id: "INV-28590", cust: "horizon", amount: 2140, issued: "18 Aug", due: "17 Sep", days: 38, status: "Overdue 8 days" },
   { id: "INV-28601", cust: "wicklow", amount: 1980, issued: "20 Aug", due: "19 Sep", days: 36, status: "Overdue 6 days" },
   { id: "INV-28688", cust: "murphy", amount: 9860, issued: "10 Sep", due: "31 Oct EOM", days: 15, status: "Current" },
@@ -876,7 +876,7 @@ export const CASH = {
 export const WC_OPPS: [string, number, string][] = [
   ["Slow & dead stock actions", 168000, "Supplier returns, transfers, bundles and stopped replenishment across 482 slow lines."],
   ["Improved collections", 38000, "Bring the 60 and 90+ day buckets back inside terms: Doyle, McGrath, Tallaght, Midland."],
-  ["Supplier terms", 14000, "Atlas and Hansen from 45 to 60 days, in exchange for forecast sharing."],
+  ["Supplier terms", 14000, "EuroFix and Hansen from 45 to 60 days, in exchange for forecast sharing."],
   ["Stock optimisation", 6000, "Right-size safety stock on 140 fast movers using actual lead-time variance."],
 ];
 
@@ -1026,7 +1026,7 @@ export const AGENT_QA: { q: RegExp; a: string; rows?: [string, string, string][]
     a: "14 orders worth €84,760 are at risk this week. 7 of them (€46,280) are on today's dispatch. The cause is mostly one supplier: 6 orders depend on Atlas PO-8821. The rest are D11 over weight (2), a picking delay on W01, a count mismatch in Naas and two credit holds.",
     go: [["Orders", "risk"]] },
   { q: /buy|purchase|reorder/i,
-    a: "Buy three lines today. EL-4408 Industrial Cable (160 units, order today, stockout 28 Sep without it): I'd buy from EuroCable, not Atlas. €0.45 more landed, 9 days instead of 28, 97.8% OTIF. EL-4521 glands (200) and FIX-1180 concrete screws (200). Cancel the planned SafePro glasses PO and transfer 600 from Naas instead.",
+    a: "Buy three lines today. EL-4408 Industrial Cable (160 units, order today, stockout 21 Oct without it): I'd buy from EuroCable, not Atlas. €0.45 more landed, 9 days instead of 28, 97.8% OTIF. EL-4521 glands (200) and FIX-1180 concrete screws (200). Cancel the planned SafePro glasses PO and transfer 600 from Naas instead.",
     go: [["Purchasing", "recommendations"], ["Inventory", "replenishment"]] },
   { q: /margin|losing|leak/i,
     a: "Margin is 23.8% against a 25.0% target, a €13,008 gap this month (€156,096 annualised). Biggest leaks: outdated customer pricing €4,820, excessive discounting €3,260, supplier cost increases not passed through €2,940. The EuroFix increase alone: 37 customers still on old M10 bolt pricing, €819 a month.",

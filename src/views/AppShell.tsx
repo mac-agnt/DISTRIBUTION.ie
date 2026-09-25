@@ -11,7 +11,7 @@ import Activity from "./pages/Activity";
 import Settings from "./pages/Settings";
 import Dashboard from "./pages/Dashboard";
 import Agents from "./pages/Agents";
-import HeliosMini from "./overlays/HeliosMini";
+import PulseMini from "./overlays/PulseMini";
 import WorkViewer from "./overlays/WorkViewer";
 import AgentStudio from "./overlays/AgentStudio";
 import NewRecordDialog from "./overlays/NewRecordDialog";
@@ -353,7 +353,7 @@ export default function AppShell({ v }: Props) {
                 <div style={{"position":"relative","display":"flex","flexDirection":"column","gap":"7px","maxHeight":"min(58vh,440px)","overflowY":"auto","scrollbarWidth":"none"}}>
                   {arr(v.notifications).map((n: any, i3: number) => (
                     <Fragment key={i3}>
-                      <div className="ix9" style={css(n?.cardStyle)}>
+                      <div className="ix9" onClick={n?.open} style={css(n?.cardStyle)}>
                         <span style={css(n?.washStyle)} />
                         <span style={css(n?.dotStyle)} />
                         <span style={{"position":"relative","flex":"1","minWidth":"0","display":"block"}}>
@@ -452,7 +452,7 @@ export default function AppShell({ v }: Props) {
                           {"No contacts match"}
                         </div>
                         <div style={{"fontSize":"13px","color":"var(--dim)","marginTop":"6px"}}>
-                          {"Try fewer words — it matches on name, role, organisation and tag."}
+                          {"Try fewer words. It matches on name, role, account and tag."}
                         </div>
                       </div>
                     </>
@@ -595,7 +595,7 @@ export default function AppShell({ v }: Props) {
           </button>
         </>
       )}
-      {v.miniOpen && <HeliosMini v={v} />}
+      {v.miniOpen && <PulseMini v={v} />}
       {v.workViewer?.open && <WorkViewer v={v} />}
       {v.builderOpen && <AgentStudio v={v} />}
       {v.detail?.open && (
@@ -772,7 +772,7 @@ export default function AppShell({ v }: Props) {
                 <>
                   <div style={{"padding":"8px 24px 4px","animation":"expandIn .3s var(--ease) both"}}>
                     <div style={{"fontFamily":"var(--mono)","fontSize":"9.5px","letterSpacing":"0.13em","color":"var(--faint)","marginTop":"10px"}}>
-                      {"PULSE BUILT THIS — EDIT ANYTHING"}
+                      {"PULSE BUILT THIS · EDIT ANYTHING"}
                     </div>
                     <div style={{"marginTop":"14px"}}>
                       {arr(v.builder?.blocks).map((b: any, i145: number) => (

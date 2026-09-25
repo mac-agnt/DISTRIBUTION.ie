@@ -12,7 +12,7 @@ export default function CommandPalette({ v }: Props) {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--dim)" strokeWidth="1.9" strokeLinecap="round" style={{"flex":"none"}}>
               <path d="m21 21-4.3-4.3 M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0" />
             </svg>
-            <input value={v.query ?? ""} onChange={v.setQuery} onKeyDown={v.onQueryKey} autoFocus={true} placeholder="Search records, work, agents and actions" style={{"flex":"1","minWidth":"0","border":"0","outline":"0","fontSize":"15px","background":"none","color":"var(--ink)"}} />
+            <input value={v.query ?? ""} onChange={v.setQuery} onKeyDown={v.onQueryKey} autoFocus={true} placeholder="Search customers, orders, SKUs, POs, suppliers, routes and pages" style={{"flex":"1","minWidth":"0","border":"0","outline":"0","fontSize":"15px","background":"none","color":"var(--ink)"}} />
             {v.hasQuery && (
               <>
                 <button className="ix3" onClick={v.clearQuery} title="Clear" style={{"flex":"none","width":"22px","height":"22px","border":"0","borderRadius":"8px","background":"var(--surface-2)","color":"var(--dim)","cursor":"pointer","display":"flex","alignItems":"center","justifyContent":"center"}}>
@@ -166,7 +166,7 @@ export default function CommandPalette({ v }: Props) {
             )}
             {v.hasQuery && (
               <>
-                <div onClick={v.askHelios} onMouseEnter={v.hoverAsk} style={css(v.askRowStyle)}>
+                <div onClick={v.askPulse} onMouseEnter={v.hoverAsk} style={css(v.askRowStyle)}>
                   <span style={css(v.askIconStyle)}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M12 3v3 M12 18v3 M4.5 12h3 M16.5 12h3 M6.7 6.7l2.1 2.1 M15.2 15.2l2.1 2.1 M17.3 6.7l-2.1 2.1 M8.8 15.2l-2.1 2.1" />
@@ -174,7 +174,7 @@ export default function CommandPalette({ v }: Props) {
                   </span>
                   <div style={{"minWidth":"0","flex":"1"}}>
                     <div style={{"fontSize":"13.5px","lineHeight":"1.35"}}>
-                      {"Ask Helios"}
+                      {"Ask Pulse"}
                     </div>
                     <div style={{"fontSize":"11.5px","color":"var(--dim)","marginTop":"2px","overflow":"hidden","textOverflow":"ellipsis","whiteSpace":"nowrap"}}>
                       {txt(v.askPreview)}
@@ -239,7 +239,7 @@ export default function CommandPalette({ v }: Props) {
                         {"Nothing you can see matches that"}
                       </div>
                       <div style={{"fontSize":"12px","color":"var(--dim)","marginTop":"6px"}}>
-                        {"Results are filtered to your grants. Press ⌘↵ to ask Helios instead."}
+                        {"Results are filtered to your grants. Press ⌘↵ to ask Pulse instead."}
                       </div>
                     </div>
                   </>
@@ -255,7 +255,7 @@ export default function CommandPalette({ v }: Props) {
               {"↵ OPEN"}
             </span>
             <span>
-              {"⌘↵ ASK HELIOS"}
+              {"⌘↵ ASK PULSE"}
             </span>
             <span style={{"flex":"1"}} />
             <span>

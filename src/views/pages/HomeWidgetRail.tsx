@@ -220,16 +220,19 @@ export default function HomeWidgetRail({ v }: Props) {
             </div>
           </>
         )}
-        {v.show?.visits && (
+        {v.show?.deliveries && (
           <>
             <div style={{"background":"var(--surface)","border":"1px solid var(--border)","borderRadius":"var(--card-r,18px)","backdropFilter":"blur(20px) saturate(1.3)","boxShadow":"var(--card-shadow)","transition":"transform .28s var(--ease),border-color .24s var(--ease),box-shadow .28s var(--ease)","padding":"20px 22px 10px"}}>
               <div style={{"display":"flex","alignItems":"center","gap":"10px"}}>
                 <div style={{"flex":"1","fontSize":"13.5px","fontWeight":"500"}}>
-                  {"Site visits this week"}
+                  {"Deliveries today"}
                 </div>
+                <span style={{"fontFamily":"var(--mono)","fontSize":"9.5px","letterSpacing":"0.08em","color":"var(--faint)"}}>
+                  {txt(v.deliveryHint)}
+                </span>
                 {v.widgetEdit && (
                   <>
-                    <button className="ixd" onClick={v.removeVisits} title="Remove widget" style={{"width":"24px","height":"24px","flex":"none","border":"1px solid var(--border)","borderRadius":"8px","background":"var(--surface-2)","color":"var(--dim)","cursor":"pointer","display":"flex","alignItems":"center","justifyContent":"center","transition":"color .2s var(--ease),border-color .2s var(--ease)"}}>
+                    <button className="ixd" onClick={v.removeDeliveries} title="Remove widget" style={{"width":"24px","height":"24px","flex":"none","border":"1px solid var(--border)","borderRadius":"8px","background":"var(--surface-2)","color":"var(--dim)","cursor":"pointer","display":"flex","alignItems":"center","justifyContent":"center","transition":"color .2s var(--ease),border-color .2s var(--ease)"}}>
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
                         <path d="M6 6l12 12 M18 6 6 18" />
                       </svg>
@@ -238,15 +241,15 @@ export default function HomeWidgetRail({ v }: Props) {
                 )}
               </div>
               <div style={{"marginTop":"6px"}}>
-                {arr(v.visitWidget).map((v: any, i21: number) => (
+                {arr(v.deliveryWidget).map((d: any, i21: number) => (
                   <Fragment key={i21}>
-                    <div style={{"display":"flex","alignItems":"center","gap":"11px","padding":"11px 0","borderTop":"1px solid var(--border)"}}>
-                      <span style={css(cat("width:7px;height:7px;border-radius:2px;flex:none;background:", v?.dot))} />
+                    <div onClick={d?.open} style={{"display":"flex","alignItems":"center","gap":"11px","padding":"11px 0","borderTop":"1px solid var(--border)","cursor":"pointer"}}>
+                      <span style={css(cat("width:7px;height:7px;border-radius:2px;flex:none;background:", d?.dot))} />
                       <span style={{"flex":"1","minWidth":"0","fontSize":"12.5px","overflow":"hidden","textOverflow":"ellipsis","whiteSpace":"nowrap"}}>
-                        {txt(v?.title)}
+                        {txt(d?.title)}
                       </span>
                       <span style={{"fontFamily":"var(--mono)","fontSize":"10.5px","color":"var(--faint)"}}>
-                        {txt(v?.when)}
+                        {txt(d?.when)}
                       </span>
                     </div>
                   </Fragment>
@@ -279,7 +282,7 @@ export default function HomeWidgetRail({ v }: Props) {
               <div style={{"marginTop":"14px"}}>
                 {arr(v.activity).map((a: any, i22: number) => (
                   <Fragment key={i22}>
-                    <div style={{"display":"flex","gap":"11px","paddingBottom":"14px"}}>
+                    <div onClick={a?.open} style={{"display":"flex","gap":"11px","paddingBottom":"14px","cursor":"pointer"}}>
                       <span style={css(cat("width:6px;height:6px;border-radius:2px;flex:none;margin-top:6px;background:", a?.dot))} />
                       <div style={{"minWidth":"0","flex":"1"}}>
                         <div style={{"fontSize":"12.5px","lineHeight":"1.5","color":"var(--body)"}}>

@@ -4,7 +4,7 @@
 export type Module = { id: string; label: string; icon: string; subs: [string, string][]; dot?: boolean };
 
 export const MODULES: Module[] = [
-  { id: "Home", label: "Home", icon: "navHome", subs: [["command", "Command Centre"], ["exec", "Executive Dashboard"]], dot: true },
+  { id: "Home", label: "Home", icon: "navHome", subs: [["home", "Home"], ["command", "Command Centre"], ["exec", "Executive Dashboard"]], dot: true },
   { id: "Orders", label: "Orders", icon: "orders", subs: [["overview", "Overview"], ["live", "Live Orders"], ["risk", "At Risk"], ["backorders", "Backorders"], ["allocation", "Allocation"], ["detail", "Order Detail"]], dot: true },
   { id: "Inventory", label: "Inventory", icon: "inventory", subs: [["overview", "Overview"], ["stock", "Stock"], ["availability", "Availability"], ["replenishment", "Replenishment"], ["slow", "Slow & Dead"], ["forecast", "Forecast"], ["transfers", "Transfers"]] },
   { id: "Purchasing", label: "Purchasing", icon: "purchasing", subs: [["overview", "Overview"], ["recommendations", "Recommendations"], ["orders", "Purchase Orders"], ["incoming", "Incoming"], ["suppliers", "Suppliers"], ["performance", "Performance"]] },
@@ -21,7 +21,7 @@ export const DIST_MODULES = ["Orders", "Inventory", "Purchasing", "Warehouse", "
 
 /* Pulse page ids that belong to each rail module (for the active state). */
 export const MODULE_PAGES: Record<string, string[]> = {
-  Home: ["Home", "Dashboard"],
+  Home: ["Home", "Command", "Dashboard"],
   Agents: ["Agents", "AgentActivity", "Chat"],
 };
 

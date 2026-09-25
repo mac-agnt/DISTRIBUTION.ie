@@ -4,9 +4,9 @@
     {
       "name": "distribution",
       "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "npx vite --port ${PORT:-5188} --strictPort"],
-      "port": 5188,
-      "autoPort": true
+      "runtimeArgs": ["-c", "npx vite --host 127.0.0.1 --port 5190 --strictPort"],
+      "port": 5190,
+      "autoPort": false
     }
   ]
 }

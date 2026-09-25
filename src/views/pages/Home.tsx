@@ -42,6 +42,15 @@ export default function Home({ v }: Props) {
                   <div style={{"marginTop":"10px","fontSize":"13px","color":"var(--dim)","textWrap":"pretty"}}>
                     {txt(v.homeSubline)}
                   </div>
+                  <div style={{"display":"flex","flexWrap":"wrap","justifyContent":"center","gap":"8px","marginTop":"18px","maxWidth":"660px"}}>
+                    {arr(v.suggestions).map((sg: any, iSg: number) => (
+                      <Fragment key={iSg}>
+                        <button className="ixl" onClick={sg?.run} style={{"height":"30px","padding":"0 13px","border":"1px solid var(--border)","borderRadius":"var(--r-ctl,11px)","background":"var(--surface-faint)","backdropFilter":"blur(18px) saturate(1.25)","fontSize":"12.5px","color":"var(--body)","cursor":"pointer","whiteSpace":"nowrap","transition":"border-color .2s var(--ease),color .2s var(--ease),background .2s var(--ease)"}}>
+                          {txt(sg?.label)}
+                        </button>
+                      </Fragment>
+                    ))}
+                  </div>
                 </div>
               </>
             )}

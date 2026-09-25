@@ -181,6 +181,68 @@ export default function Activity({ v }: Props) {
             </div>
           </>
         )}
+        {v.act?.systemsLens && (
+          <>
+            <div style={{"display":"grid","gridTemplateColumns":"repeat(4,minmax(0,1fr))","gap":"12px"}}>
+              {arr(v.act?.systemsKpis).map((k: any, i90: number) => (
+                <Fragment key={i90}>
+                  <div style={css(k?.style)}>
+                    <div style={{"display":"flex","alignItems":"center","gap":"8px"}}>
+                      <span style={css(cat("width:7px;height:7px;border-radius:2px;background:", k?.dot))} />
+                      <span style={{"flex":"1","minWidth":"0","fontSize":"12.5px","color":"var(--dim)","overflow":"hidden","textOverflow":"ellipsis","whiteSpace":"nowrap"}}>
+                        {txt(k?.label)}
+                      </span>
+                    </div>
+                    <div style={css(cat("font-family:var(--mono);font-size:28px;font-weight:var(--fig-weight,inherit);letter-spacing:-1px;margin-top:10px;color:", k?.valueColor))}>
+                      {txt(k?.value)}
+                    </div>
+                    <div style={{"fontSize":"11.5px","color":"var(--faint)","marginTop":"6px","overflow":"hidden","textOverflow":"ellipsis","whiteSpace":"nowrap"}}>
+                      {txt(k?.hint)}
+                    </div>
+                  </div>
+                </Fragment>
+              ))}
+            </div>
+            <div style={{"display":"flex","alignItems":"center","gap":"10px","marginTop":"22px","padding":"0 4px"}}>
+              <span style={{"fontFamily":"var(--mono)","fontSize":"9.5px","letterSpacing":"0.14em","color":"var(--faint)"}}>
+                {"CONNECTED SYSTEMS"}
+              </span>
+              <span style={{"flex":"1","height":"1px","background":"var(--border)"}} />
+            </div>
+            <div style={{"display":"grid","gridTemplateColumns":"repeat(auto-fill,minmax(300px,1fr))","gap":"9px","marginTop":"11px"}}>
+              {arr(v.act?.systemsRoster).map((p: any, i91: number) => (
+                <Fragment key={i91}>
+                  <button className="ixr" onClick={p?.go} style={css(p?.style)}>
+                    <div style={{"display":"flex","alignItems":"center","gap":"11px","width":"100%","minWidth":"0"}}>
+                      <span style={css(p?.avatarStyle)}>
+                        {txt(p?.initials)}
+                      </span>
+                      <span style={{"flex":"1","minWidth":"0","display":"block"}}>
+                        <span style={{"display":"flex","alignItems":"center","gap":"7px","minWidth":"0"}}>
+                          <span style={{"flex":"none","fontSize":"13.5px","fontWeight":"600","letterSpacing":"-.15px","color":"var(--ink)"}}>
+                            {txt(p?.name)}
+                          </span>
+                          <span style={css(p?.dotStyle)} />
+                          <span style={css(p?.stateStyle)}>
+                            {txt(p?.stateLabel)}
+                          </span>
+                        </span>
+                        <span style={{"display":"block","fontSize":"11.5px","color":"var(--dim)","marginTop":"3px","overflow":"hidden","textOverflow":"ellipsis","whiteSpace":"nowrap"}}>
+                          {txt(p?.role)}
+                          {" · "}
+                          {txt(p?.preview)}
+                        </span>
+                      </span>
+                    </div>
+                    <div style={{"width":"100%","minWidth":"0","fontSize":"11.5px","color":"var(--faint)","overflow":"hidden","textOverflow":"ellipsis","whiteSpace":"nowrap"}}>
+                      {txt(p?.records)}
+                    </div>
+                  </button>
+                </Fragment>
+              ))}
+            </div>
+          </>
+        )}
         {v.act?.attentionLens && (
           <>
             <div style={{"display":"grid","gridTemplateColumns":"repeat(4,minmax(0,1fr))","gap":"12px"}}>

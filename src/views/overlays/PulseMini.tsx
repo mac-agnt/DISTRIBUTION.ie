@@ -3,7 +3,7 @@ import { arr, cat, css, cx, txt } from "../../runtime/template";
 
 type Props = { v: any };
 
-export default function HeliosMini({ v }: Props) {
+export default function PulseMini({ v }: Props) {
   return (
     <>
       <div style={{"position":"fixed","right":"26px","bottom":"96px","zIndex":"46","width":"min(392px,88vw)","maxHeight":"min(580px,74vh)","display":"flex","flexDirection":"column","background":"var(--overlay)","border":"1px solid var(--border-strong)","borderRadius":"var(--card-r,18px)","backdropFilter":"blur(48px) saturate(1.5)","boxShadow":"var(--card-shadow),0 30px 72px rgba(0,0,0,.5)","overflow":"hidden","animation":"panelIn .38s cubic-bezier(.16,1,.3,1) both"}}>
@@ -162,7 +162,7 @@ export default function HeliosMini({ v }: Props) {
                           )}
                           {arr(sec?.rows).map((r: any, i120: number) => (
                             <Fragment key={i120}>
-                              <div style={{"display":"flex","alignItems":"center","gap":"10px","padding":"9px 0","borderTop":"1px solid var(--border)"}}>
+                              <div onClick={r?.open} style={{"display":"flex","alignItems":"center","gap":"10px","padding":"9px 0","borderTop":"1px solid var(--border)","cursor":"pointer"}}>
                                 {r?.isCheck && (
                                   <>
                                     <span style={{"width":"16px","height":"16px","flex":"none","borderRadius":"6px","border":"1.5px solid var(--border-strong)"}} />

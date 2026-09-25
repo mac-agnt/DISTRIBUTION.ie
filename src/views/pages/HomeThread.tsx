@@ -82,7 +82,7 @@ export default function HomeThread({ v }: Props) {
                   </div>
                 </>
               )}
-              {m?.isHelios && (
+              {m?.isAgent && (
                 <>
                   <div style={{"display":"flex","gap":"14px","animation":"riseIn .4s var(--ease) both"}}>
                     <span style={{"width":"28px","height":"28px","flex":"none","borderRadius":"var(--r-sm,10px)","background":"var(--accent-soft)","border":"1px solid var(--accent-line)","display":"flex","alignItems":"center","justifyContent":"center","marginTop":"2px"}}>
