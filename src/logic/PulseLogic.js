@@ -1268,6 +1268,7 @@ export default class PulseLogic extends DCLogic {
     else if (module === "Agents") page = s === "chat" ? "Chat" : s === "activity" ? "AgentActivity" : "Agents";
     else if (module === "Work") patch.workSection = s;
     else if (module === "Activity") patch.actKpi = s;
+    else if (module === "Records") patch.recSection = s;
     this.setState(patch);
     this.go(page);
     const el = document.querySelector("[data-scroll-main]");

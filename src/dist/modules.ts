@@ -13,6 +13,7 @@ export const MODULES: Module[] = [
   { id: "Customers", label: "Customers", icon: "customers", subs: [["overview", "Overview"], ["accounts", "Accounts"], ["opportunities", "Opportunities"], ["health", "Customer Health"], ["quotes", "Quotes"], ["detail", "Customer Detail"]] },
   { id: "Pricing", label: "Pricing & Margin", icon: "pricing", subs: [["margin", "Margin Control"], ["lists", "Price Lists"], ["exceptions", "Exceptions"], ["costs", "Cost Changes"], ["discounts", "Discounts"], ["profit", "Profitability"]] },
   { id: "Finance", label: "Finance", icon: "finance", subs: [["overview", "Overview"], ["revenue", "Revenue"], ["debtors", "Debtors"], ["credit", "Credit Control"], ["cash", "Cash"], ["wc", "Working Capital"]] },
+  { id: "Records", label: "Ontology", icon: "graph", subs: [["ontology", "Ontology"], ["contacts", "Contacts"], ["files", "Files"]] },
   { id: "Work", label: "Work", icon: "navWork", subs: [["tasks", "Tasks"], ["approvals", "Approvals"], ["workflows", "Workflows"], ["schedules", "Schedules"]] },
   { id: "Agents", label: "Agents", icon: "navAgents", subs: [["agents", "Agents"], ["activity", "Agent Activity"], ["chat", "Chat"]] },
   { id: "Activity", label: "Activity", icon: "pulseLine", subs: [["all", "Everything"], ["people", "People"], ["ai", "Agents"], ["systems", "Systems"], ["attention", "Needs Attention"]], dot: true },

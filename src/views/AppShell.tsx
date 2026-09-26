@@ -31,20 +31,9 @@ export default function AppShell({ v }: Props) {
       <nav data-rail-nav="1" style={css(v.railOuter)}>
         <span style={css(v.railThumbStyle)} />
         <div style={css(cat(v.railRowStyle, "margin-bottom:22px"))}>
-          <button className={cx("ix0", "ix1")} onClick={v.toggleRail} title={v.railLabel} style={{"width":"36px","height":"36px","flex":"none","border":"0","borderRadius":"var(--cta-r,11px)","background":"linear-gradient(145deg,#315bff 0%,#4f74ff 100%)","color":"#ffffff","boxShadow":"0 0 22px rgba(49,91,255,.35),inset 0 1px 0 rgba(255,255,255,.25)","cursor":"pointer","display":"flex","alignItems":"center","justifyContent":"center","fontSize":"12.5px","fontWeight":"700","letterSpacing":".02em","padding":"0","transition":"transform .2s var(--ease)"}}>
-            {"CD"}
-          </button>
-          <span style={css(v.brandStyle)}>
-            <span style={{"display":"block","fontSize":"15px","fontWeight":"600","letterSpacing":"-.3px","color":"var(--ink)"}}>
-              {"DISTRIBUTION.ie"}
-            </span>
-            <span style={{"display":"block","marginTop":"2px","fontSize":"9px","fontWeight":"500","letterSpacing":".16em","color":"var(--accent)"}}>
-              {"CONSULTING · PULSE"}
-            </span>
-          </span>
-          {v.railOpen && (
+          {true && (
             <>
-              <button className="ix2" onClick={v.toggleRail} title={v.railLabel} style={{"width":"28px","height":"28px","flex":"none","border":"0","borderRadius":"var(--r-ctl,10px)","background":"none","color":"var(--mid)","cursor":"pointer","display":"flex","alignItems":"center","justifyContent":"center","transition":"background .2s var(--ease),color .2s var(--ease)"}}>
+              <button className="ix2" onClick={v.toggleRail} title={v.railLabel} style={{"marginLeft":"auto","width":"28px","height":"28px","flex":"none","border":"0","borderRadius":"var(--r-ctl,10px)","background":"none","color":"var(--mid)","cursor":"pointer","display":"flex","alignItems":"center","justifyContent":"center","transition":"background .2s var(--ease),color .2s var(--ease)"}}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4 6h16 M4 12h10 M4 18h16" />
                 </svg>

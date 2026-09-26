@@ -592,7 +592,7 @@ const STREAM_DEFS = [
 /* The rail: Home, the eight distribution modules, then Pulse's own Work, Agents and Activity. */
 const NAV = [];
 MODULES.forEach((m, i) => {
-  if (m.id === "Orders" || m.id === "Work") NAV.push({divider:true});
+  if (m.id === "Orders" || m.id === "Records") NAV.push({divider:true});
   NAV.push({label:m.label, icon:m.icon, page:m.id, pages:MODULE_PAGES[m.id] || [m.id], dot:m.dot});
 });
 
